@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: backend/tic_tac_toe/.
+    ports:
+      - "8080:8080"
+  frontend:
+    build: frontend/.
+    ports:
+      - "80:80"
+    depends_on:
+    - backend

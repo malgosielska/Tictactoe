@@ -1,0 +1,14 @@
+com\Lista1\config\WebSocketConfiguration.class
+com\Lista1\service\GameService.class
+com\Lista1\controller\dto\ConnectRequest.class
+com\Lista1\controller\GameController.class
+com\Lista1\model\GameStatus.class
+com\Lista1\exception\InvalidGameException.class
+com\Lista1\storage\GameStorage.class
+com\Lista1\exception\InvalidParamException.class
+com\Lista1\exception\NotFoundException.class
+com\Lista1\model\TicTacToe.class
+com\Lista1\model\Game.class
+com\Lista1\model\GamePlay.class
+com\Lista1\TicTacToeApplication.class
+com\Lista1\model\Player.class
