@@ -1,241 +1,256 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-          name="viewport">
+        name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <title>Document</title>
     <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" rel="stylesheet">
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
+
 <body>
-<body>
-<div class="text-center" id="box">
-    <header>
-        <h1>Play Tic Tac Toe</h1>
-    </header>
-    <input id="login" placeholder="Place a login here">
-    <button onclick="create_game()">Create a new game</button>
-    <button onclick="connectToRandom()">Connect to random game</button>
-    <input id="game_id" placeholder="Paste game id">
-    <button onclick="connectToSpecificGame()">Connect by game id</button>
-    <div id="message"></div>
-    <ul id="gameBoard">
-        <li class="tic" id="0_0"></li>
-        <li class="tic" id="0_1"></li>
-        <li class="tic" id="0_2"></li>
-        <li class="tic" id="1_0"></li>
-        <li class="tic" id="1_1"></li>
-        <li class="tic" id="1_2"></li>
-        <li class="tic" id="2_0"></li>
-        <li class="tic" id="2_1"></li>
-        <li class="tic" id="2_2"></li>
-    </ul>
-    <div class="clearfix"></div>
-    <footer>
-        <span>You are playing with <span id="oponentLogin"></span></span>
-    </footer>
-</div>
-<script>
-const url = 'http://3.85.179.33:8080';
-let stompClient;
-let gameId;
-let playerType;
 
-function reset() {
-    turns = [["#", "#", "#"], ["#", "#", "#"], ["#", "#", "#"]];
-    $(".tic").text("#");
-}
+    <body>
 
-function connectToSocket(gameId) {
+        <div>
+            <h1>Tic Tac Toe</h1>
+            <div id="box">
+                <header>
+                    <h2>Let the fun begin</h2>
+                </header>
+                <input type="text" id="login" placeholder="Enter your login" value=""
+                    style="width: 85%; margin-bottom: 20px; margin-left: 25px; padding: 10px; border-radius: 5px;" />
+                <input type="text" id="game_id" placeholder="Enter game ID" value=""
+                    style="width: 85%; margin-bottom: 20px; margin-left: 25px; padding: 10px; border-radius: 5px;" />
+                <button onclick="create_game()" style="margin-bottom: 20px; margin-left: 30px;">Create a new
+                    game</button>
+                <button onclick="connectToSpecificGame()" style="margin-bottom: 20px; margin-left: 10px;">Connect by
+                    game
+                    id</button>
+                <button onclick="connectToRandom()" style="margin-bottom: 20px; margin-left: 30px;">Connect to random
+                    game</button>
+            </div>
+            <div id="box">
+                <div id="message"></div>
+                <ul id="gameBoard">
+                    <li class="tic" id="0_0"></li>
+                    <li class="tic" id="0_1"></li>
+                    <li class="tic" id="0_2"></li>
+                    <li class="tic" id="1_0"></li>
+                    <li class="tic" id="1_1"></li>
+                    <li class="tic" id="1_2"></li>
+                    <li class="tic" id="2_0"></li>
+                    <li class="tic" id="2_1"></li>
+                    <li class="tic" id="2_2"></li>
+                </ul>
+                <div class="clearfix"></div>
+                <footer>
+                    <span>You are playing with: <span id="oponentLogin"></span></span>
+                </footer>
+            </div>
+            <script>
+                const url = 'http://3.85.179.33:8080';
+                let stompClient;
+                let gameId;
+                let playerType;
 
-    console.log("connecting to the game");
-    let socket = new SockJS(url + "/gameplay");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        console.log("connected to the frame: " + frame);
-        stompClient.subscribe("/topic/game-progress/" + gameId, function (response) {
-            let data = JSON.parse(response.body);
-            console.log(data);
-            turn = data.turn;
-            displayResponse(data);
-        })
-    })
-}
+                function reset() {
+                    turns = [["#", "#", "#"], ["#", "#", "#"], ["#", "#", "#"]];
+                    $(".tic").text("#");
+                }
 
-function create_game() {
-    let login = document.getElementById("login").value;
-    if (login == null || login === '') {
-        alert("Please enter login");
-    } else {
-        $.ajax({
-            url: url + "/game/start",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "login": login
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                playerType = 'X';
-                reset();
-                connectToSocket(gameId);
-                alert("Your created a game. Game id is: " + data.gameId);
-                gameOn = true;
-                turn = playerType;
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    }
-}
+                function connectToSocket(gameId) {
 
+                    console.log("connecting to the game");
+                    let socket = new SockJS(url + "/gameplay");
+                    stompClient = Stomp.over(socket);
+                    stompClient.connect({}, function (frame) {
+                        console.log("connected to the frame: " + frame);
+                        stompClient.subscribe("/topic/game-progress/" + gameId, function (response) {
+                            let data = JSON.parse(response.body);
+                            console.log(data);
+                            turn = data.turn;
+                            displayResponse(data);
+                        })
+                    })
+                }
 
-function connectToRandom() {
-    let login = document.getElementById("login").value;
-    if (login == null || login === '') {
-        alert("Please enter login");
-    } else {
-        $.ajax({
-            url: url + "/game/connect/random",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "login": login
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                playerType = 'O';
-                reset();
-                connectToSocket(gameId);
-                alert("Congrats you're playing with: " + data.player1.login);
-                turn = 'X';
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    }
-}
-
-function connectToSpecificGame() {
-    let login = document.getElementById("login").value;
-    if (login == null || login === '') {
-        alert("Please enter login");
-    } else {
-        let newGameId = document.getElementById("game_id").value;
-        if (newGameId == null || newGameId === '') {
-            alert("Please enter game id");
-        }
-        $.ajax({
-            url: url + "/game/connect",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "player": {
-                    "login": login
-                },
-                "gameId": newGameId
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                playerType = 'O';
-                reset();
-                connectToSocket(gameId);
-                alert("Congrats you're playing with: " + data.player1.login);
-                turn = 'X';
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    }
-}
+                function create_game() {
+                    let login = document.getElementById("login").value;
+                    if (login == null || login === '') {
+                        alert("Please enter login");
+                    } else {
+                        $.ajax({
+                            url: url + "/game/start",
+                            type: 'POST',
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                "login": login
+                            }),
+                            success: function (data) {
+                                gameId = data.gameId;
+                                playerType = 'X';
+                                reset();
+                                connectToSocket(gameId);
+                                alert("Your created a game. Game id is: " + data.gameId);
+                                gameOn = true;
+                                turn = playerType;
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        })
+                    }
+                }
 
 
-let turns = [["#", "#", "#"], ["#", "#", "#"], ["#", "#", "#"]];
-let turn = '';
-let gameOn = false;
+                function connectToRandom() {
+                    let login = document.getElementById("login").value;
+                    if (login == null || login === '') {
+                        alert("Please enter login");
+                    } else {
+                        $.ajax({
+                            url: url + "/game/connect/random",
+                            type: 'POST',
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                "login": login
+                            }),
+                            success: function (data) {
+                                gameId = data.gameId;
+                                playerType = 'O';
+                                reset();
+                                connectToSocket(gameId);
+                                alert("Congrats you're playing with: " + data.player1.login);
+                                turn = 'X';
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        })
+                    }
+                }
 
-function playerTurn(turn, id) {
-    if (gameOn) {
-        let spotTaken = $("#" + id).text();
-        if (spotTaken === "#") {
-            if (turn === 'X') {
-                turn = "O";
-            } else {
-                turn = "X";
-            }
-            makeAMove(turn, playerType, id.split("_")[0], id.split("_")[1]);
-        }
-    }
-}
+                function connectToSpecificGame() {
+                    let login = document.getElementById("login").value;
+                    if (login == null || login === '') {
+                        alert("Please enter login");
+                    } else {
+                        let newGameId = document.getElementById("game_id").value;
+                        if (newGameId == null || newGameId === '') {
+                            alert("Please enter game id");
+                        }
+                        $.ajax({
+                            url: url + "/game/connect",
+                            type: 'POST',
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                "player": {
+                                    "login": login
+                                },
+                                "gameId": newGameId
+                            }),
+                            success: function (data) {
+                                gameId = data.gameId;
+                                playerType = 'O';
+                                reset();
+                                connectToSocket(gameId);
+                                alert("Congrats you're playing with: " + data.player1.login);
+                                turn = 'X';
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        })
+                    }
+                }
 
-function makeAMove(turn, type, xCoordinate, yCoordinate) {
-    $.ajax({
-        url: url + "/game/gameplay",
-        type: 'POST',
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify({
-            "turn": turn,
-            "type": type,
-            "coordinateX": xCoordinate,
-            "coordinateY": yCoordinate,
-            "gameId": gameId
-        }),
-        success: function (data) {
-            gameOn = false;
-            displayResponse(data);
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    })
-}
 
-function displayResponse(data) {
-    let board = data.board;
-    let turnNow = data.turn;
-    for (let i = 0; i < board.length; i++) {
-        for (let j = 0; j < board[i].length; j++) {
-            if (board[i][j] === 1) {
-                turns[i][j] = 'X'
-            } else if (board[i][j] === 2) {
-                turns[i][j] = 'O';
-            }
-            let id = i + "_" + j;
-            $("#" + id).text(turns[i][j]);
-        }
-    }
-    if (data.winner != null) {
-        alert("Winner is " + data.winner);
-    } else {
-        gameOn = (turnNow === playerType);
-    }
-}
+                let turns = [["#", "#", "#"], ["#", "#", "#"], ["#", "#", "#"]];
+                let turn = '';
+                let gameOn = false;
 
-$(".tic").click(function () {
-    let slot = $(this).attr('id');
-    playerTurn(playerType, slot);
-});
+                function playerTurn(turn, id) {
+                    if (gameOn) {
+                        let spotTaken = $("#" + id).text();
+                        if (spotTaken === "#") {
+                            if (turn === 'X') {
+                                turn = "O";
+                            } else {
+                                turn = "X";
+                            }
+                            makeAMove(turn, playerType, id.split("_")[0], id.split("_")[1]);
+                        }
+                    }
+                }
 
-$("#reset").click(function () {
-    reset();
-});
+                function makeAMove(turn, type, xCoordinate, yCoordinate) {
+                    $.ajax({
+                        url: url + "/game/gameplay",
+                        type: 'POST',
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            "turn": turn,
+                            "type": type,
+                            "coordinateX": xCoordinate,
+                            "coordinateY": yCoordinate,
+                            "gameId": gameId
+                        }),
+                        success: function (data) {
+                            gameOn = false;
+                            displayResponse(data);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    })
+                }
 
-</script>
-<!-- <sctipt src="script.js" type="module"></sctipt>
+                function displayResponse(data) {
+                    let board = data.board;
+                    let turnNow = data.turn;
+                    for (let i = 0; i < board.length; i++) {
+                        for (let j = 0; j < board[i].length; j++) {
+                            if (board[i][j] === 1) {
+                                turns[i][j] = 'X'
+                            } else if (board[i][j] === 2) {
+                                turns[i][j] = 'O';
+                            }
+                            let id = i + "_" + j;
+                            $("#" + id).text(turns[i][j]);
+                        }
+                    }
+                    if (data.winner != null) {
+                        alert("Winner is " + data.winner);
+                    } else {
+                        gameOn = (turnNow === playerType);
+                    }
+                }
+
+                $(".tic").click(function () {
+                    let slot = $(this).attr('id');
+                    playerTurn(playerType, slot);
+                });
+
+                $("#reset").click(function () {
+                    reset();
+                });
+
+            </script>
+            <!-- <sctipt src="script.js" type="module"></sctipt>
 <script src="socket_js.js"></script> -->
+    </body>
 </body>
-</body>
+
 </html>
