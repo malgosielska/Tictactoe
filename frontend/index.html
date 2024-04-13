@@ -13,6 +13,87 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <style>
+        body {
+            background: #EFB1C7;
+            color: #000000;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #FCD97D;
+            text-align: center;
+        }
+
+        h2 {
+            color: #EFB1C7;
+            text-align: center;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        #box {
+            width: 400px;
+            overflow: auto;
+            margin: 40px auto;
+            background: #F4E0EA;
+            padding-bottom: 40px;
+            border-radius: 10px;
+            align-items: center;
+            padding: 20px;
+
+        }
+
+        #message {
+            background: #fceaea;
+            color: #fff;
+        }
+
+        #gameBoard li {
+            float: left;
+            margin: 10px;
+            height: 70px;
+            width: 70px;
+            font-size: 50px;
+            background: #ffff;
+            border: 5px solid #EFC9D6;
+            color: #EFC9D6;
+            list-style: none;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        #gameBoard li:hover,
+        #reset:hover {
+            cursor: pointer;
+            background: #EFB1C7;
+        }
+
+        #reset {
+            border: 0;
+            background: #444;
+            color: #fff;
+            width: 70%;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .o {
+            color: green !important;
+        }
+
+        .x {
+            color: red !important;
+        }
+
+        footer {
+            display: block;
+            text-align: center;
+            padding-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
