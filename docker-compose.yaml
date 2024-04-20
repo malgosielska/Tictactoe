@@ -1,6 +1,6 @@
 services:
   backend:
-    build: backend/tic_tac_toe/.
+    build: backend/.
     ports:
       - "8080:8080"
   frontend:
